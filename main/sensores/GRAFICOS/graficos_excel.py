@@ -2,12 +2,12 @@ import pandas as pd
 import plotly.express as px
 
 # Lê os dados do Excel
-df = pd.read_excel("ph_log.xlsx")
+df = pd.read_excel('dados_ph_excel.xlsx')
 
 # Converte a coluna timestamp pra datetime
 df['timestamp'] = pd.to_datetime(df['timestamp'])
 
-# Cria o gráfico interativo
+# Cria a misera grafico interativo
 fig = px.line(
     df,
     x="timestamp",

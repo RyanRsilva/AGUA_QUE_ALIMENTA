@@ -9,16 +9,16 @@ from sqlalchemy import create_engine
 # ====== CONFIG ======
 porta_serial = 'COM3'  # muda aqui quando estivermos com o ESP32
 baud_rate = 115200
-arquivo_excel = "ph_log.xlsx"
-banco_dados = "sqlite:///ph_database.db"
+excel_file = 'dados_ph_excel.xlsx'
+bd_file = "sqlite:///dados_ph_SQL.db"
 
 #  CRIA EXCEL SE NÃO EXISTIR  ( eu acho kkk)
-if not os.path.exists(arquivo_excel):
+if not os.path.exists(excel_file):
     df_inicial = pd.DataFrame(columns=["timestamp", "ph"])
-    df_inicial.to_excel(arquivo_excel, index=False)
+    df_inicial.to_excel(excel_file, index=False)
 
 #  TENTA CONECTAR AO BANCO 
-engine = create_engine(banco_dados)
+engine = create_engine(bd_file)
 
 # CONECTA À SERIAL (OU TENTA SIMULA ESSA BAGAÇA) 
 try:
@@ -51,7 +51,7 @@ try:
                 novo_dado = pd.DataFrame([[timestamp, ph_valor]], columns=["timestamp", "ph"])
 
                 # Salva no Excel
-                with pd.ExcelWriter(arquivo_excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+                with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
                     novo_dado.to_excel(writer, index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
 
                 # Salva no banco SQLite

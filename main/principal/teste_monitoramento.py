@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 from openpyxl import load_workbook
 import os
 
-excel_file = 'dados_ph.xlsx'
-db_file = 'dados_ph.db'
+excel_file = 'dados_ph_excel.xlsx'
+db_file = "dados_ph_SQL.db"
 sheet_name = 'leituras_ph'
 
 # Cria arquivo Excel se não existir
@@ -14,6 +14,7 @@ if not os.path.exists(excel_file):
     df.to_excel(excel_file, index=False, sheet_name=sheet_name)
 
 # Cria banco de dados se não existir
+
 conn = sqlite3.connect(db_file)
 cursor = conn.cursor()
 cursor.execute('''
