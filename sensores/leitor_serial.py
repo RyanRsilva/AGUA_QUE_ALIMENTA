@@ -9,8 +9,9 @@ from sqlalchemy import create_engine
 # ====== CONFIG ======
 porta_serial = 'COM3'  # muda aqui quando estivermos com o ESP32
 baud_rate = 115200
-excel_file = 'dados_ph_excel.xlsx'
-bd_file = "sqlite:///dados_ph_SQL.db"
+excel_file = os.path.join ('banco', 'dados_ph_excel.xlsx')
+db_path =  os.path.join("banco", "dados_ph_SQL.db")
+bd_file = f'sqlite:///{db_path}'
 
 #  CRIA EXCEL SE NÃO EXISTIR  ( eu acho kkk)
 if not os.path.exists(excel_file):
@@ -18,7 +19,7 @@ if not os.path.exists(excel_file):
     df_inicial.to_excel(excel_file, index=False)
 
 #  TENTA CONECTAR AO BANCO 
-engine = create_engine(bd_file)
+engine = create_engine(bd_file) 
 
 # CONECTA À SERIAL (OU TENTA SIMULA ESSA BAGAÇA) 
 try:
@@ -54,8 +55,10 @@ try:
                 with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
                     novo_dado.to_excel(writer, index=False, header=False, startrow=writer.sheets['Sheet1'].max_row)
 
-                # Salva no banco SQLite
-                novo_dado.to_sql("leituras_ph", con=engine, if_exists='append', index=False)
+
+                # Salva no banco SQLite na TABELA CERTA
+                novo_dado_sql = pd.DataFrame([[timestamp, 'ph', ph_valor]], columns=["data_hora", "sensor", "valor"])
+                novo_dado_sql.to_sql("leituras", con=engine, if_exists='append', index=False)
 
                 print(f"[{timestamp}] pH: {ph_valor}")
             except Exception as e:

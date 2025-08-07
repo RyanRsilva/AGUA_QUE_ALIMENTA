@@ -1,7 +1,7 @@
 import sqlite3
 
 # Conectar ao banco (vai criar se não existir)
-conn = sqlite3.connect("dados_ph_SQL.db")
+conn = sqlite3.connect("banco/dados_ph_SQL.db")
 cursor = conn.cursor()
 
 # Criar a tabela (se não existir)
@@ -22,7 +22,7 @@ VALUES ('ph', 7.2, datetime('now'))
 
 # Salvar e consultar os dados
 conn.commit()
-cursor.execute("SELECT * FROM leituras")
+cursor.execute("SELECT * FROM leituras_ph")
 dados = cursor.fetchall()
 
 # Mostrar os dados
