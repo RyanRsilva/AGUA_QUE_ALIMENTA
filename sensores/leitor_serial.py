@@ -6,6 +6,7 @@ from time import sleep
 import random
 from sqlalchemy import create_engine
 
+
 # ====== CONFIG ======
 porta_serial = 'COM3'  # muda aqui quando estivermos com o ESP32
 baud_rate = 115200
@@ -20,6 +21,9 @@ if not os.path.exists(excel_file):
 
 #  TENTA CONECTAR AO BANCO 
 engine = create_engine(bd_file) 
+
+def iniciar_leitura_serial():
+    """função que lê o valor de ph e salva no exvcel e SQLite"""
 
 # CONECTA À SERIAL (OU TENTA SIMULA ESSA BAGAÇA) 
 try:
