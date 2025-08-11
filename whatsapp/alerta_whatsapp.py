@@ -1,3 +1,8 @@
+# codigos 
+
+
+
+
 # Processo de envio de mensagens via WhatsApp
 
 """[SQLite DB] --->[Ler últimas leituras] --->[Valor fora da faixa?] --->[Pode enviar?]
@@ -55,7 +60,8 @@ COOLDOWN_SECONDS = int(os.getenv("COOLDOWN_SECONDS", "600"))  # 10 minutos por p
 SIMULATION = os.getenv("SIMULATION", "False").lower() in ("1", "true", "yes")
 
 # Endpoint (versão pode mudar conforme doc, aqui usamos v17.0+ compatível)
-WH_URL_TEMPLATE = "https://graph.facebook.com/v17.0/{phone_id}/messages"
+WM_URL_TEMPLATE = "https://graph.facebook.com/v22.0/{phone_id}/messages"
+
 
 # ===== Estado em memória: controla cooldown por telefone =====
 last_alert_time = {}  # dict: numero -> datetime do último alerta
@@ -78,7 +84,7 @@ def enviar_whatsapp_texto(to_number: str, texto: str) -> bool:
         print("Erro: WH_TOKEN ou WH_PHONE_ID não configurados. Use .env ou configure as variáveis.")
         return False
 
-    url = WH_URL_TEMPLATE.format(phone_id=WH_PHONE_ID)
+    url = WM_URL_TEMPLATE.format(phone_id=WH_PHONE_ID)
     payload = {
         "messaging_product": "whatsapp",
         "to": to_number,

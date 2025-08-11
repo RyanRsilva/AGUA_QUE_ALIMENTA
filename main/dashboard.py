@@ -40,4 +40,4 @@ while True:
 
 
 
-# codigo para correr ele : streamlit run main/dashboard.py
+# codigo para correr ele : streamlit run main/dashboard.py  
