@@ -1,50 +1,37 @@
-""# whatsapp/alerta_whatsapp.py
+# whatsapp/alerta_whatsapp.py
 
 import requests
 import urllib.parse
 
 # --- CONFIGURAÇÕES ---
-# Coloque aqui o seu número de telefone com o código do país (55 para o Brasil)
-MEU_TELEFONE = "55819xxxxxxxx"  # Ex: 5581999998888
-# Coloque aqui a APIKEY que você recebeu do bot
-MINHA_APIKEY = "1234567" # Substitua pela sua chave
+MEU_TELEFONE = "558194330307"  # Ex: 5581999998888
+MINHA_APIKEY = "2180486"
 
-# --- FUNÇÃO DE ENVIO ---
+
 def enviar_alerta_whatsapp(ph_valor):
     """
-    Envia uma mensagem de alerta para o seu WhatsApp usando a API da CallMeBot.
+    Envia uma mensagem de alerta para o WhatsApp usando a API da CallMeBot.
     """
-    # Monta a mensagem. O urllib.parse.quote garante que espaços e caracteres especiais funcionem.
-    mensagem = f"⚠️ *Alerta de pH!* ⚠️\n\nO valor atual é *{ph_valor}*, que está fora da faixa ideal."
+    mensagem = f"⚠️ *Alerta de pH!* ⚠️\n\nO valor atual é *{ph_valor}*, que está fora da faixa ideal (6.5 a 8.0)."
     mensagem_formatada = urllib.parse.quote(mensagem)
 
-    # Monta a URL da API
     url = f"https://api.callmebot.com/whatsapp.php?phone={MEU_TELEFONE}&text={mensagem_formatada}&apikey={MINHA_APIKEY}"
 
-    print(f"\n[ALERTA] pH fora da faixa ({ph_valor}). Enviando notificação para o WhatsApp...")
+    print(
+        f"\n[ALERTA] pH fora da faixa ({ph_valor}). Enviando notificação para o WhatsApp...")
 
     try:
-        # Faz a requisição HTTP GET
-        response = requests.get(url)
+        response = requests.get(url, timeout=10)  # Adicionado timeout de 10s
         if response.status_code == 200:
             print("[ALERTA] Notificação enviada com sucesso!")
         else:
-            print(f"[ALERTA] Erro ao enviar notificação. Código: {response.status_code}")
+            print(
+                f"[ALERTA] Erro ao enviar notificação. Código: {response.status_code}, Resposta: {response.text}")
     except Exception as e:
         print(f"[ALERTA] Falha na conexão ao enviar notificação: {e}")
 
-# Se quisermos testar este script diretamente, podemos fazer isso:
+
+# Adicione estas linhas no final do arquivo whatsapp/alerta_whatsapp.py
+
 if __name__ == '__main__':
-    print("Enviando mensagem de teste...")
-    enviar_alerta_whatsapp(5.2) # Envia um alerta com um valor de exemplo
-    ""
-
-    # Em whatsapp/alerta_whatsapp.py
-
-def enviar_alerta_whatsapp(ph_valor):
-    """
-    (VERSÃO DE TESTE) Apenas imprime um alerta no console.
-    """
-    print("\n" + "="*50)
-    print(f"      ⚠️  ALERTA DE PH DETECTADO! VALOR: {ph_valor} ⚠️")
-    print("="*50 + "\n")
+    enviar_alerta_whatsapp("9.5")  # Envia um teste com pH 9.5
