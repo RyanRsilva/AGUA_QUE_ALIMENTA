@@ -1,40 +1,37 @@
-import sys
-import os
+# main/main.py
+
 import threading
 import time
 
-# Adiciona a raiz do projeto ao PYTHONPATH
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+# Agora os imports funcionam de forma natural por causa dos arquivos __init__.py
 from sensores.leitor_serial import iniciar_leitura_serial
-from whatsapp.alerta_whatsapp import iniciar_monitoramento_alerta
+from sensores.monitoramento_ph import iniciar_monitoramento_alerta
 
 def main():
-    # Thread 1 - Leitura e gravação de dados
     t1 = threading.Thread(target=iniciar_leitura_serial, daemon=True)
-
-    # Thread 2 - Monitoramento de pH e alerta
     t2 = threading.Thread(target=iniciar_monitoramento_alerta, daemon=True)
 
     print("🚀 Sistema iniciado. Pressione CTRL+C para sair.\n")
 
     t1.start()
+    time.sleep(2) # Pausa para garantir que a thread serial comece primeiro
     t2.start()
 
     try:
-        while True:
-            time.sleep(1)  # Mantém o main rodando
+        while t1.is_alive() and t2.is_alive():
+            time.sleep(1)
     except KeyboardInterrupt:
-        print("\n🛑 Sistema encerrado.")
+        print("\n🛑 Sistema encerrado pelo usuário.")
+    finally:
+        print("Finalizando...")
 
 if __name__ == "__main__":
     main()
+    
+    
+    
+# ativar venv : .\.venv\Scripts\Activate.ps1
 
+# ativar main : python -m main.main
 
-#  =======  sistema  =======
-
-# para rodar o sistema, execute: python -m main.main
-
-# para rodar o dashboard, execute: streamlit run main/dashboard.py
-
-# para rodar o alerta WhatsApp, execute: python whatsapp/alerta_whatsapp.py
+# ativar dashboard: streamlit run main/dashboard.py
