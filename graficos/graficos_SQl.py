@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 engine = create_engine("sqlite:///dados_ph_SQL.db")
 
 # Lê os dados da tabela
-df = pd.read_sql("SELECT * FROM leituras_ph", con=engine)
+df = pd.read_sql("SELECT * FROM leituras", con=engine)
 
 # Converte a coluna timestamp
 df['timestamp'] = pd.to_datetime(df['timestamp'])

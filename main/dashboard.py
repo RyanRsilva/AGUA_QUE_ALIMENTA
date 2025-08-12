@@ -2,7 +2,7 @@ import streamlit as st
 import sqlite3
 import pandas as pd
 import time 
-
+import os 
 # ===== config basicas =====
 
 st.set_page_config(page_title="Monitoramento da Qualidade da Água", layout="centered")
@@ -10,9 +10,13 @@ st.title("Monitoramento da Qualidade da Água")
 st.markdown("Dados em tempo real do sensor de pH (e outros futuramente)")
 
 # ===== funçao para ler dados do banco =====
-
 def Carregar_Dados ():
-    conn = sqlite3.connect("banco/dados_ph_SQL.db") # tenho que verificar se o caminho ta correto
+    # Constrói o caminho absoluto para o banco de dados
+    # Isso garante que o Streamlit sempre o encontrará, não importa de onde você rode o comando
+    caminho_script = os.path.dirname(__file__) # Pega o diretório do script atual (ex: .../main)
+    caminho_db = os.path.abspath(os.path.join(caminho_script, '..', 'banco', 'dados_ph_SQL.db'))
+
+    conn = sqlite3.connect(caminho_db)
     df = pd.read_sql_query("SELECT * FROM leituras ORDER BY data_hora DESC LIMIT 50", conn)
     conn.close()
     return df
