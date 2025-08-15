@@ -9,8 +9,8 @@ from whatsapp.alerta_whatsapp import enviar_alerta_whatsapp
 # --- CONFIGURAÇÕES GLOBAIS ---
 FAIXA_MIN_PH = 6.5
 FAIXA_MAX_PH = 8.0
-INTERVALO_VERIFICACAO = 10  # A cada 10 segundos
-INTERVALO_ALERTA = 20       # A cada 20 segundos para teste
+INTERVALO_VERIFICACAO = 300  # A cada 10 segundos
+INTERVALO_ALERTA = 600       # A cada 20 segundos para teste
 
 
 def iniciar_monitoramento_alerta():

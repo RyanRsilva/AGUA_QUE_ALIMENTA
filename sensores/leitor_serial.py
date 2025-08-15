@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 # ==============================================================================
 # --- CONFIGURAÇÕES ---
 # ==============================================================================
-# Garanta que a porta e a velocidade são as mesmas configuradas no seu ESP32
+
 porta_serial = 'COM3'  
 baud_rate = 115200  # Velocidade de comunicação
 
