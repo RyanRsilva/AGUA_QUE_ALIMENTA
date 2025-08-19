@@ -36,3 +36,5 @@ if __name__ == "__main__":
 # ativar main : python -m main.main
 
 # ativar dashboard: streamlit run main/dashboard.py
+
+# ativa o backand.py: python main/backend_server.py
