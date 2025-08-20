@@ -33,7 +33,7 @@ class SensorData(BaseModel):
 @app.post("/data")
 def receive_data(data: SensorData):
     """
-    Este é o guardião. Quando o ESP32 envia dados para /data, esta função é executada.
+    o ESP32 envia dados para /data, esta função é executada.
     """
     timestamp = datetime.now()
     print(f"[{timestamp.strftime('%H:%M:%S')}] Dado recebido -> Sensor: {data.sensor}, Valor: {data.value}")

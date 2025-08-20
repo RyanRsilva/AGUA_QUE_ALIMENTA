@@ -3,7 +3,7 @@
 import threading
 import time
 
-# Agora os imports funcionam de forma natural por causa dos arquivos __init__.py
+
 from sensores.leitor_serial import iniciar_leitura_serial
 from sensores.monitoramento_ph import iniciar_monitoramento_alerta
 
@@ -35,6 +35,8 @@ if __name__ == "__main__":
 
 # ativar main : python -m main.main
 
+# ativa o backand.py: python main/backend_server.py
+
 # ativar dashboard: streamlit run main/dashboard.py
 
-# ativa o backand.py: python main/backend_server.py
+# ativar o zapzap : whatsapp/alerta_whatsapp.py 

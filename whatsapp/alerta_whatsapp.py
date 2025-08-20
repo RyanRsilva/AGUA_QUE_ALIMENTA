@@ -4,14 +4,12 @@ import requests
 import urllib.parse
 
 # --- CONFIGURAÇÕES ---
-MEU_TELEFONE = "558194330307"  # Ex: 5581999998888
+MEU_TELEFONE = "558194330307" 
 MINHA_APIKEY = "2180486"
 
 
 def enviar_alerta_whatsapp(ph_valor):
-    """
-    Envia uma mensagem de alerta para o WhatsApp usando a API da CallMeBot.
-    """
+
     mensagem = f"⚠️ *Alerta de pH!* ⚠️\n\nO valor atual é *{ph_valor}*, que está fora da faixa ideal (6.5 a 8.0)."
     mensagem_formatada = urllib.parse.quote(mensagem)
 
