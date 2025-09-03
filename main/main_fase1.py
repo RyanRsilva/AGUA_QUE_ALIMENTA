@@ -33,9 +33,9 @@ if __name__ == "__main__":
 
 # ativar venv : .\.venv\Scripts\Activate.ps1
 
-# ativar main : python -m main.main
+# ativa o backand.py: python backend_server.py
 
-# ativa o backand.py: python main/backend_server.py
+# ativar o alert_service: python -m alertas.alert_service
 
 # ativar dashboard: streamlit run main/dashboard.py
 

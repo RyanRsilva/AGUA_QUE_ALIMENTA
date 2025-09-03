@@ -1,50 +1,68 @@
+# main/dashboard.py (Versão API-Driven)
+
 import streamlit as st
-import sqlite3
 import pandas as pd
 import time
-import os
-# ===== config basicas =====
+import requests
 
+# --- CONFIGURAÇÕES ---
 st.set_page_config(
     page_title="Monitoramento da Qualidade da Água", layout="centered")
 st.title("Monitoramento da Qualidade da Água")
-st.markdown("Dados em tempo real do sensor de pH (e outros futuramente)")
+st.markdown("Dados em tempo real via API do sensor de pH")
 
-# ===== funçao para ler dados do banco =====
+# O endereço de informações"
+API_BASE_URL = "http://127.0.0.1:8000"
 
 
-def Carregar_Dados():
-    # Constrói o caminho absoluto para o banco de dados
-    # Isso garante que o Streamlit sempre o encontrará, não importa de onde você rode o comando
-    # Pega o diretório do script atual (ex: .../main)
-    caminho_script = os.path.dirname(__file__)
-    caminho_db = os.path.abspath(os.path.join(
-        caminho_script, '..', 'banco', 'dados_ph.db'))
+def carregar_dados_via_api():
+    """
+    Esta função não toca mais no banco de dados. Ela faz uma requisição GET
+    para o nosso endpoint de histórico no servidor FastAPI.
+    """
+    try:
+        # Fazemos a chamada para o nosso endpoint, pedindo as últimas 50 leituras.
+        response = requests.get(f"{API_BASE_URL}/dados/historico/50")
 
-    conn = sqlite3.connect(caminho_db)
-    df = pd.read_sql_query(
-        "SELECT * FROM leituras ORDER BY data_hora DESC LIMIT 50", conn)
-    conn.close()
-    return df
+        # Esta linha verifica se o servidor respondeu com um erro (ex: 404, 500).
+        # Se houve um erro, o programa para aqui e mostra o erro.
+        response.raise_for_status()
 
-# ===== loop de atualização =====
+        # Se a resposta foi um sucesso, pegamos o corpo da resposta em formato JSON.
+        dados_json = response.json()
 
+        # Convertemos o JSON (que é uma lista de dicionários) em um DataFrame do Pandas.
+        df = pd.DataFrame(dados_json)
+        return df
+
+    except requests.exceptions.RequestException as e:
+        # Se o servidor estiver offline ou houver um erro de rede, mostramos um aviso.
+        st.error(f"Erro de conexão com a API: {e}")
+        # Retorna um DataFrame vazio para não quebrar o resto do app.
+        return pd.DataFrame()
 
 placeholder = st.empty()
 
 while True:
-    df = Carregar_Dados()
+    df = carregar_dados_via_api()
 
-    with placeholder.container():
-        st.subheader("Útimas leituras")
-        st.dataframe(df)
+    if not df.empty:
+        with placeholder.container():
+            st.subheader("Últimas Leituras (via API)")
 
-        st.subheader("Gráfico do pH")
-        df['data_hora'] = pd.to_datetime(df['data_hora'])
-        df_grafico = df.set_index('data_hora')[['valor']]
-        st.line_chart(df_grafico)
+            # Prepara a exibição dos dados 
+            df_display = df.copy()
+            df_display['data_hora'] = pd.to_datetime(
+                df_display['data_hora']).dt.strftime('%Y-%m-%d %H:%M:%S')
+            st.dataframe(df_display.set_index('data_hora'))
 
-    time.sleep(5)  # atualiza a cada 5 seg
+            st.subheader("Gráfico do pH em Tempo Real")
+            df_grafico = df.copy()
+            df_grafico['data_hora'] = pd.to_datetime(df_grafico['data_hora'])
+            df_grafico = df_grafico.set_index('data_hora')[['valor']]
+            st.line_chart(df_grafico)
+    else:
+        with placeholder.container():
+            st.warning("Aguardando dados da API do servidor...")
 
-
-# codigo para correr ele : streamlit run main/dashboard.py
+    time.sleep(5)  # Atualiza a cada 5 segundos

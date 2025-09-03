@@ -1,35 +1,49 @@
-# whatsapp/alerta_whatsapp.py
+# whatsapp/alerta_whatsapp.py 
 
 import requests
 import urllib.parse
 
-# --- CONFIGURAÇÕES ---
-MEU_TELEFONE = "558194330307" 
+# --- CONFIGURAÇÕES GLOBAIS ---
+
 MINHA_APIKEY = "2180486"
 
 
-def enviar_alerta_whatsapp(ph_valor):
+def enviar_alerta_whatsapp(numero_destino, mensagem):
+    """
+    Envia uma MENSAGEM específica para um NÚMERO DE TELEFONE específico.
+    """
+    if not MINHA_APIKEY or MINHA_APIKEY == "SUA_CHAVE_APIKEY_AQUI":
+        print(
+            "[ALERTA WHATSAPP] Erro: APIKEY não configurada no arquivo alerta_whatsapp.py")
+        return False
 
-    mensagem = f"⚠️ *Alerta de pH!* ⚠️\n\nO valor atual é *{ph_valor}*, que está fora da faixa ideal (6.5 a 8.0)."
+    if not numero_destino or not mensagem:
+        print("[ALERTA WHATSAPP] Erro: Número de destino ou mensagem não fornecidos.")
+        return False
+
     mensagem_formatada = urllib.parse.quote(mensagem)
-
-    url = f"https://api.callmebot.com/whatsapp.php?phone={MEU_TELEFONE}&text={mensagem_formatada}&apikey={MINHA_APIKEY}"
+    url = f"https://api.callmebot.com/whatsapp.php?phone={numero_destino}&text={mensagem_formatada}&apikey={MINHA_APIKEY}"
 
     print(
-        f"\n[ALERTA] pH fora da faixa ({ph_valor}). Enviando notificação para o WhatsApp...")
+        f"[ALERTA WHATSAPP] Enviando notificação para o número {numero_destino}...")
 
     try:
-        response = requests.get(url, timeout=10)  # Adicionado timeout de 10s
+        response = requests.get(url)
         if response.status_code == 200:
-            print("[ALERTA] Notificação enviada com sucesso!")
+            print("[ALERTA WHATSAPP] Notificação enviada com sucesso!")
+            return True
         else:
             print(
-                f"[ALERTA] Erro ao enviar notificação. Código: {response.status_code}, Resposta: {response.text}")
+                f"[ALERTA WHATSAPP] Erro ao enviar. Código: {response.status_code}, Resposta: {response.text}")
+            return False
     except Exception as e:
-        print(f"[ALERTA] Falha na conexão ao enviar notificação: {e}")
+        print(f"[ALERTA WHATSAPP] Falha de conexão: {e}")
+        return False
 
 
-# Adicione estas linhas no final do arquivo whatsapp/alerta_whatsapp.py
-
+# --- Bloco de Teste ---
 if __name__ == '__main__':
-    enviar_alerta_whatsapp("9.5")  # Envia um teste com pH 9.5
+    print("--- Testando o módulo de alerta do WhatsApp ---")
+    numero_teste = "55SEUNUMEROAQUI"
+    mensagem_teste = "Olá! Este é um teste do sistema de alertas dinâmico. Kronnos."
+    enviar_alerta_whatsapp(numero_teste, mensagem_teste)
