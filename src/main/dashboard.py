@@ -1,5 +1,6 @@
 # main/dashboard.py (Versão API-Driven)
 
+from src.config.config import API_BASE_URL
 import streamlit as st
 import pandas as pd
 import time
@@ -12,7 +13,6 @@ st.title("Monitoramento da Qualidade da Água")
 st.markdown("Dados em tempo real via API do sensor de pH")
 
 # O endereço de informações"
-API_BASE_URL = "http://127.0.0.1:8000"
 
 
 def carregar_dados_via_api():
@@ -41,6 +41,7 @@ def carregar_dados_via_api():
         # Retorna um DataFrame vazio para não quebrar o resto do app.
         return pd.DataFrame()
 
+
 placeholder = st.empty()
 
 while True:
@@ -50,7 +51,7 @@ while True:
         with placeholder.container():
             st.subheader("Últimas Leituras (via API)")
 
-            # Prepara a exibição dos dados 
+            # Prepara a exibição dos dados
             df_display = df.copy()
             df_display['data_hora'] = pd.to_datetime(
                 df_display['data_hora']).dt.strftime('%Y-%m-%d %H:%M:%S')

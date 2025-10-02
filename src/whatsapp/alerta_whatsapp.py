@@ -4,7 +4,7 @@ import requests
 import urllib.parse
 
 import logging
-from config import MINHA_APIKEY
+from config.config import MINHA_APIKEY
 
 logger = logging.getLogger(__name__)
 

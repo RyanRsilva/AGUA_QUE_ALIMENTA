@@ -9,7 +9,7 @@ import os
 from datetime import datetime
 from sqlalchemy import create_engine
 import logging
-from config import DB_DIR, CSV_FILE, DB_PATH, BD_URI, API_USERNAME, API_PASSWORD
+from config.config import DB_DIR, CSV_FILE, DB_PATH, BD_URI, API_USERNAME, API_PASSWORD
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO,
@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 
 os.makedirs(DB_DIR, exist_ok=True)
 engine = create_engine(BD_URI)
-
 app = FastAPI()
 security = HTTPBasic()
 
