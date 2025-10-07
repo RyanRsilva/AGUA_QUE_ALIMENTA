@@ -34,7 +34,7 @@ Este projeto implementa um sistema IoT para monitoramento da qualidade da água,
 
 3. **Instale as dependências**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r banco_geral/requirements.txt
    ```
 
 4. **Configure as variáveis de ambiente**:
@@ -50,7 +50,13 @@ Este projeto implementa um sistema IoT para monitoramento da qualidade da água,
 
 ### Executar o Sistema Completo
 ```bash
-python main/main.py
+cd banco_geral
+python run_all.py
+```
+
+Ou diretamente:
+```bash
+python src/main/main.py
 ```
 
 Isso iniciará:
@@ -62,17 +68,22 @@ Isso iniciará:
 
 **Servidor API**:
 ```bash
-python backend_server.py
+python src/backend_server.py
 ```
 
 **Dashboard**:
 ```bash
-streamlit run main/dashboard.py
+streamlit run src/main/dashboard.py
 ```
 
-**Alertas**:
+**Leitura Serial**:
 ```bash
-python -m alertas.alert_service
+python src/sensores/leitor_serial.py
+```
+
+**Monitoramento de Alertas**:
+```bash
+python src/sensores/monitoramento_ph.py
 ```
 
 ### API Endpoints
@@ -103,24 +114,52 @@ CLIENT_device_id=55xxxxxxxxx
 
 ## Desenvolvimento
 
-### Estrutura do Projeto
+## Estrutura do Projeto
 ```
-.
-├── main/
-│   ├── main.py              # Ponto de entrada principal
-│   └── dashboard.py         # Dashboard Streamlit
-├── sensores/
-│   ├── leitor_serial.py     # Leitura de dados serial
-│   └── monitoramento_ph.py  # (obsoleto, usar alertas/)
-├── alertas/
-│   └── alert_service.py     # Serviço de alertas
-├── whatsapp/
-│   └── alerta_whatsapp.py   # Envio de mensagens WhatsApp
-├── banco/                   # Dados e gráficos
-├── config.py                # Configurações centralizadas
-├── backend_server.py       # API FastAPI
-├── tests/                   # Testes unitários
-└── requirements.txt         # Dependências
+agua_que_alimenta/
+├── src/                        # Código fonte principal
+│   ├── alertas/                # Serviços e lógica de alertas
+│   │   ├── __init__.py
+│   ├── banco/                  # Banco de dados, arquivos CSV, gráficos
+│   │   ├── __init__.py
+│   │   ├── dados_ph.db         # Banco SQLite
+│   │   ├── historico_ph.csv    # Arquivo CSV histórico
+│   │   ├── graficos_excel.py
+│   │   └── graficos_SQl.py
+│   ├── config/                 # Configurações e variáveis de ambiente
+│   │   ├── __init__.py
+│   │   └── config.py
+│   ├── main/                   # Código principal da aplicação
+│   │   ├── __init__.py
+│   │   ├── main.py             # Entry point principal (threading)
+│   │   ├── main_fase1.py       # Versão alternativa
+│   │   └── dashboard.py        # Dashboard Streamlit
+│   ├── sensores/               # Leitura e monitoramento dos sensores
+│   │   ├── __init__.py
+│   │   ├── leitor_serial.py    # Leitura serial/simulada
+│   │   └── monitoramento_ph.py # Monitoramento de pH e alertas
+│   ├── utils/                  # Utilitários e helpers
+│   │   ├── __init__.py
+│   │   ├── LEITURAS/
+│   │   └── test/
+│   ├── whatsapp/               # Integração com WhatsApp
+│   │   ├── __init__.py
+│   │   └── alerta_whatsapp.py
+│   └── backend_server.py       # Servidor FastAPI
+├── tests/                      # Testes unitários e de integração
+├── banco/                      # Dados persistentes
+├── banco_geral/                # Configurações Docker
+│   ├── Dockerfile
+│   ├── docker-compose.yml
+│   ├── requirements.txt
+│   ├── run_all.py
+│   ├── start_all.sh
+│   ├── README.md
+│   └── TODO.md
+├── .env                        # Variáveis de ambiente
+├── .gitignore
+├── LICENSE
+└── AGUA_QUE_ALIMENTA.code-workspace
 ```
 
 ### Logs
@@ -128,10 +167,17 @@ Logs são salvos em `app.log` com nível INFO.
 
 ## Docker
 
-Para executar com Docker:
+Para executar com Docker Compose (recomendado, inclui Evolution API para WhatsApp):
 ```bash
+cd banco_geral
+docker-compose up --build
+```
+
+Ou manualmente:
+```bash
+cd banco_geral
 docker build -t agua-monitor .
-docker run -p 8000:8000 agua-monitor
+docker run -p 8000:8000 -p 8501:8501 agua-monitor
 ```
 
 ## Segurança

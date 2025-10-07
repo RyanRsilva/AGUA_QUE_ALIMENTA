@@ -1,7 +1,11 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 import pandas as pd
 import os
 from datetime import datetime
@@ -20,6 +24,12 @@ engine = create_engine(BD_URI)
 app = FastAPI()
 security = HTTPBasic()
 
+# Rate limiting
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_middleware(SlowAPIMiddleware)
+
 
 def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
     if credentials.username != API_USERNAME or credentials.password != API_PASSWORD:
@@ -28,13 +38,14 @@ def authenticate(credentials: HTTPBasicCredentials = Depends(security)):
 
 
 class SensorData(BaseModel):
-    device_id: str
-    sensor: str
-    value: float
+    device_id: str = Field(min_length=1, max_length=50)
+    sensor: str = Field(min_length=1, max_length=50)
+    value: float = Field(ge=0)
 
 
+@limiter.limit("10/minute")
 @app.post("/data")
-def receive_data(data: SensorData):
+def receive_data(data: SensorData, request: Request):
     """
     Recebe dados do ESP32 (via POST) e os salva.
     """
@@ -62,8 +73,9 @@ def receive_data(data: SensorData):
 # --- Endpoint 1: Obter a última leitura ---
 
 
+@limiter.limit("30/minute")
 @app.get("/dados/ultimo", dependencies=[Depends(authenticate)])
-def get_latest_reading():
+def get_latest_reading(request: Request):
     """
     Busca no banco de dados e retorna a leitura mais recente.
     """
@@ -81,12 +93,16 @@ def get_latest_reading():
 # --- Endpoint 2: Obter um histórico de leituras ---
 
 
+@limiter.limit("30/minute")
 @app.get("/dados/historico/{limit}", dependencies=[Depends(authenticate)])
-def get_historical_readings(limit: int):
+def get_historical_readings(limit: int, request: Request):
     """
     Retorna as últimas 'limit' leituras. O 'limit' é passado na própria URL.
     Ex: /dados/historico/10 -> retorna as últimas 10 leituras.
     """
+    if limit < 1 or limit > 1000:
+        raise HTTPException(
+            status_code=400, detail="Limit deve ser entre 1 e 1000")
     try:
         query = f"SELECT * FROM leituras ORDER BY data_hora DESC LIMIT {limit}"
         df = pd.read_sql(query, con=engine)
@@ -101,24 +117,28 @@ def get_historical_readings(limit: int):
 # --- Endpoint 3: Obter um resumo estatístico ---
 
 
+@limiter.limit("30/minute")
 @app.get("/dados/resumo", dependencies=[Depends(authenticate)])
-def get_summary():
+def get_summary(request: Request):
     """
-    Lê todos os dados de pH e retorna um resumo com média, mínimo, máximo e contagem.
+    Lê todos os dados e retorna um resumo por sensor com média, mínimo, máximo e contagem.
     """
     try:
-        query = "SELECT valor FROM leituras WHERE sensor = 'ph'"
+        query = "SELECT sensor, valor FROM leituras"
         df = pd.read_sql(query, con=engine)
         if df.empty:
             raise HTTPException(
                 status_code=404, detail="Nenhum dado encontrado")
 
-        resumo = {
-            "total_leituras": int(df['valor'].count()),
-            "ph_medio": round(df['valor'].mean(), 2),
-            "ph_minimo": float(df['valor'].min()),
-            "ph_maximo": float(df['valor'].max())
-        }
+        resumo = {}
+        for sensor in df['sensor'].unique():
+            sensor_df = df[df['sensor'] == sensor]
+            resumo[sensor] = {
+                "total_leituras": int(sensor_df['valor'].count()),
+                "medio": round(sensor_df['valor'].mean(), 2),
+                "minimo": float(sensor_df['valor'].min()),
+                "maximo": float(sensor_df['valor'].max())
+            }
         return resumo
     except Exception as e:
         raise HTTPException(

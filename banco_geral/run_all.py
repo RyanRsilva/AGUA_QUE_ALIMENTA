@@ -10,9 +10,9 @@ def run_process(command, name):
 
 def main():
     # Comandos para rodar backend, dashboard e main.py
-    backend_cmd = f"{sys.executable} -m uvicorn backend_server:app --host 0.0.0.0 --port 8000"
-    dashboard_cmd = f"{sys.executable} -m streamlit run main/dashboard.py"
-    main_cmd = f"{sys.executable} main/main.py"
+    backend_cmd = f"{sys.executable} -m uvicorn src.backend_server:app --host 0.0.0.0 --port 8000"
+    dashboard_cmd = f"{sys.executable} -m streamlit run src/main/dashboard.py"
+    main_cmd = f"{sys.executable} src/main/main.py"
 
     # Inicia backend
     backend_proc = run_process(backend_cmd, "Backend FastAPI")

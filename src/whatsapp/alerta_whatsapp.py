@@ -1,33 +1,38 @@
 # whatsapp/alerta_whatsapp.py
 
 import requests
-import urllib.parse
-
 import logging
-from config.config import MINHA_APIKEY
+from config.config import EVOLUTION_API_URL, EVOLUTION_API_KEY, EVOLUTION_INSTANCE
 
 logger = logging.getLogger(__name__)
 
 
 def enviar_alerta_whatsapp(numero_destino, mensagem):
     """
-    Envia uma MENSAGEM específica para um NÚMERO DE TELEFONE específico.
+    Envia uma mensagem via Evolution API.
     """
-    if not MINHA_APIKEY or MINHA_APIKEY == "SUA_CHAVE_APIKEY_AQUI":
-        logger.error("APIKEY não configurada")
+    if not EVOLUTION_API_URL or not EVOLUTION_API_KEY or not EVOLUTION_INSTANCE:
+        logger.error("Configuração da Evolution API não encontrada")
         return False
 
     if not numero_destino or not mensagem:
         logger.error("Número de destino ou mensagem não fornecidos")
         return False
 
-    mensagem_formatada = urllib.parse.quote(mensagem)
-    url = f"https://api.callmebot.com/whatsapp.php?phone={numero_destino}&text={mensagem_formatada}&apikey={MINHA_APIKEY}"
+    url = f"{EVOLUTION_API_URL}/message/sendText/{EVOLUTION_INSTANCE}"
+    headers = {
+        "Content-Type": "application/json",
+        "apikey": EVOLUTION_API_KEY
+    }
+    data = {
+        "number": numero_destino,
+        "text": mensagem
+    }
 
     logger.info(f"Enviando notificação para o número {numero_destino}")
 
     try:
-        response = requests.get(url)
+        response = requests.post(url, json=data, headers=headers)
         if response.status_code == 200:
             logger.info("Notificação enviada com sucesso")
             return True
