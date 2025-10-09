@@ -27,7 +27,8 @@ security = HTTPBasic()
 # Rate limiting
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+app.add_exception_handler(
+    RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore
 app.add_middleware(SlowAPIMiddleware)
 
 
@@ -55,7 +56,7 @@ def receive_data(data: SensorData, request: Request):
 
     try:
         novo_dado_df = pd.DataFrame(
-            [[timestamp, data.device_id, data.value]], columns=["device_id", "timestamp", "ph"])
+            [[timestamp, data.device_id, data.value]], columns=["timestamp", "device_id", "ph"])
         novo_dado_df.to_csv(CSV_FILE, mode='a', index=False,
                             header=not os.path.exists(CSV_FILE))
 

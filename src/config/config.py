@@ -10,13 +10,12 @@ DB_PATH = os.getenv("DB_PATH", "banco/dados_ph.db")
 
 # Banco de Dados - PostgreSQL
 POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5434")
 POSTGRES_DB = os.getenv("POSTGRES_DB", "agua_que_alimenta")
-POSTGRES_USER = os.getenv("POSTGRES_USER", "your_username")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "your_password")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "agua_user")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "agua_pass")
 
-BD_URI = os.getenv(
-    "BD_URI", f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}")
+BD_URI = os.getenv("BD_URI", f"sqlite:///{DB_PATH}")
 
 # Porta Serial
 PORTA_SERIAL = os.getenv("PORTA_SERIAL", "COM3")
@@ -46,8 +45,8 @@ for key, value in os.environ.items():
         CLIENTS[device_id] = value
 
 # Credenciais API
-API_USERNAME = os.getenv("API_USERNAME", "usuario_api")
-API_PASSWORD = os.getenv("API_PASSWORD", "senha_api")
+API_USERNAME = os.getenv("API_USERNAME", "ryanrogerio")
+API_PASSWORD = os.getenv("API_PASSWORD", "br8mRzx2535")
 
 # API Base URL
 API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
