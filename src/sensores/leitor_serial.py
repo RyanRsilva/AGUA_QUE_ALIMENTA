@@ -5,11 +5,10 @@ from time import sleep
 import random
 from datetime import datetime
 
-# ==============================================================================
-# --- CONFIGURAÇÕES ---
-# ==============================================================================
 
-from ..config.settings import PORTA_SERIAL, BAUD_RATE, API_BASE_URL
+# --- CONFIGURAÇÕES ---
+
+from src.config.settings import PORTA_SERIAL, BAUD_RATE, API_BASE_URL
 
 # Configuração de logging
 logging.basicConfig(level=logging.INFO,
@@ -18,11 +17,10 @@ logger = logging.getLogger(__name__)
 
 # Endpoint da API para enviar os dados
 API_ENDPOINT = f"{API_BASE_URL}/data"
-DEVICE_ID = "esp32_leitor_serial"  # ID deste dispositivo/script
+DEVICE_ID = "esp32_leitor_serial_para_testes"  # ID deste dispositivo/script
 
-# ==============================================================================
+
 # --- FUNÇÃO PRINCIPAL ---
-# ==============================================================================
 
 
 def iniciar_leitura_serial():
@@ -95,8 +93,8 @@ def iniciar_leitura_serial():
             logger.info("Porta serial fechada.")
 
 
-# ==============================================================================
+
 # --- PONTO DE ENTRADA DO SCRIPT ---
-# ==============================================================================
+
 if __name__ == '__main__':
     iniciar_leitura_serial()

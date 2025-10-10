@@ -2,9 +2,9 @@ import pandas as pd
 import time
 import logging
 from sqlalchemy import create_engine
-from ..whatsapp.alerta_whatsapp import enviar_alerta_whatsapp
-from ..whatsapp.alerta_email import enviar_alerta_email
-from ..config.settings import BD_URI, SENSORS, INTERVALO_VERIFICACAO, INTERVALO_ALERTA, CLIENTS
+from src.whatsapp.alerta_whatsapp import enviar_alerta_whatsapp
+from src.whatsapp.alerta_email import enviar_alerta_email
+from src.config.settings import BD_URI, SENSORS, INTERVALO_VERIFICACAO, INTERVALO_ALERTA, CLIENTS
 
 logger = logging.getLogger(__name__)
 
@@ -13,10 +13,7 @@ engine = create_engine(BD_URI)
 
 
 def iniciar_monitoramento_alerta():
-    """
-    Verifica os sensores e envia alertas se fora da faixa.
-    Tenta WhatsApp primeiro, depois email como fallback.
-    """
+
     ultimo_alerta_enviado = 0
     logger.info("Serviço de monitoramento e alertas iniciado.")
 
@@ -47,7 +44,7 @@ def iniciar_monitoramento_alerta():
 
                             # Tentar WhatsApp primeiro
                             numero_admin = CLIENTS.get(
-                                'admin', '5511999999999')  # Fallback
+                                'meu_celular', '5594330307')  # Fallback
                             mensagem = f"ALERTA: {sensor.upper()} fora da faixa! Valor: {ultimo_valor} (faixa: {limits['min']}-{limits['max']})"
                             if not enviar_alerta_whatsapp(numero_admin, mensagem):
                                 logger.warning(
@@ -66,3 +63,6 @@ def iniciar_monitoramento_alerta():
             logger.error(f"Erro no loop de monitoramento: {e}")
 
         time.sleep(INTERVALO_VERIFICACAO)
+
+
+# Arquivo: src/alertas/alert_service.py

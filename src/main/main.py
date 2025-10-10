@@ -10,26 +10,27 @@ COMO EXECUTAR O PROJETO COMPLETO (EM TERMINAIS SEPARADOS):
 --------------------------------------------------------------------------------
 
 1. INICIAR O SERVIDOR BACKEND (API):
-   - O servidor FastAPI recebe os dados dos sensores e os armazena.
-   - Comando:
-      python -m uvicorn src.backend_server:app --reload
-      cd src /uvicorn backend_server:app --reload
+    - O servidor FastAPI recebe os dados dos sensores e os armazena.
+    - Comando:
+        python -m uvicorn src.backend_server:app --reload
+        tem que esta dentro do src:
+            cd src /uvicorn backend_server:app --reload
 
 2. INICIAR O DASHBOARD DE VISUALIZAÇÃO:
-   - O Streamlit consome os dados da API e os exibe em tempo real.
-   - Comando:
+    - O Streamlit consome os dados da API e os exibe em tempo real.
+    - Comando:
         python -m streamlit run src/main/dashboard.py
 
 3. (OPCIONAL) INICIAR O SIMULADOR DE SENSOR ESP32:
     - Envia dados falsos para o backend, útil para testes sem hardware.
     - Comando:
-      python simulate_esp32.py
+        python simulate_esp32.py
 
 4. EXECUTAR ESTE SCRIPT (main.py):
     - Este script inicia a leitura da porta serial (se houver um dispositivo real)
-      e o sistema de monitoramento de alertas (que verifica os dados no banco).
+        e o sistema de monitoramento de alertas (que verifica os dados no banco).
     - Comando:
-      python -m src.main.main
+        python -m src.main.main
 
 --------------------------------------------------------------------------------
 """
@@ -49,9 +50,6 @@ def main():
     """
     Função principal que inicia as threads para leitura serial e monitoramento de alertas.
     """
-    logger.info("Iniciando threads de leitura de sensor e monitoramento de alertas.")
-    logger.info("Este script NÃO inicia o servidor da API nem o dashboard.")
-    logger.info("Consulte os comentários no topo deste arquivo para o guia de execução.")
 
     # Thread para ler dados da porta serial (do hardware real)
     thread_leitura_serial = threading.Thread(target=iniciar_leitura_serial, daemon=True)

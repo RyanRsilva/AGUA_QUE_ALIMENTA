@@ -11,7 +11,9 @@ import os
 from datetime import datetime
 from sqlalchemy import create_engine
 import logging
-from config.settings import DB_DIR, CSV_FILE, BD_URI, API_USERNAME, API_PASSWORD
+from .config.settings import DB_DIR, CSV_FILE, BD_URI, API_USERNAME, API_PASSWORD
+import traceback
+
 
 
 # Configurar logging
@@ -113,6 +115,8 @@ def get_historical_readings(limit: int, request: Request):
                 status_code=404, detail="Nenhum dado encontrado")
         return df.to_dict('records')
     except Exception as e:
+        logger.error(f"Ocorreu um erro em /dados/historico: {e}")
+        logger.error(traceback.format_exc()) # Esta linha vai nos mostrar o erro completo
         raise HTTPException(
             status_code=500, detail=f"Erro ao ler o banco de dados: {e}")
 

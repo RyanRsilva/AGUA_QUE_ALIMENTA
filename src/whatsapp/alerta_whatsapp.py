@@ -3,7 +3,7 @@
 import requests
 import logging
 from urllib.parse import quote
-from src.config.settings import MINHA_APIKEY
+from ..config.settings import MINHA_APIKEY
 
 logger = logging.getLogger(__name__)
 
@@ -40,10 +40,10 @@ def enviar_alerta_whatsapp(numero_destino, mensagem):
 if __name__ == '__main__':
     print("--- Testando o módulo de alerta do WhatsApp com CallMeBot ---")
 
-    numero_teste = "5581994330307" 
+    numero_teste = "558194330307" 
     mensagem_teste = "Olá! Este é um teste do sistema de alertas com CallMeBot."
     
-    if numero_teste == "5581994330307" or not MINHA_APIKEY:
+    if numero_teste == "558194330307" or not MINHA_APIKEY:
         print("\n[AVISO] Por favor, configure o `numero_teste` neste script e a `MINHA_APIKEY` no seu arquivo .env para testar.")
     else:
         enviar_alerta_whatsapp(numero_teste, mensagem_teste)

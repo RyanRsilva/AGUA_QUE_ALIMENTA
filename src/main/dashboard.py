@@ -7,6 +7,8 @@ import time
 import requests
 from datetime import datetime, timedelta
 
+
+
 # --- CONFIGURAÇÕES ---
 st.set_page_config(
     page_title="Monitoramento da Qualidade da Água", layout="wide")
@@ -22,6 +24,8 @@ sensor_filter = st.sidebar.multiselect("Selecionar sensores", list(
     SENSORS.keys()), default=list(SENSORS.keys()))
 
 
+
+
 def carregar_dados_via_api(limit=100):
     try:
         response = requests.get(f"{API_BASE_URL}/dados/historico/{limit}", auth=(API_USERNAME, API_PASSWORD))
@@ -34,6 +38,8 @@ def carregar_dados_via_api(limit=100):
         return pd.DataFrame()
 
 
+
+
 def carregar_resumo_via_api():
     try:
         response = requests.get(f"{API_BASE_URL}/dados/resumo", auth=(API_USERNAME, API_PASSWORD))
@@ -44,7 +50,12 @@ def carregar_resumo_via_api():
         return {}
 
 
+
+
 placeholder = st.empty()
+
+
+
 
 while True:
     df = carregar_dados_via_api(200)  # Load more data

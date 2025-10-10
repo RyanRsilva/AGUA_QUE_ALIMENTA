@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 # Banco de Dados - SQLite
@@ -18,14 +19,19 @@ FAIXA_MIN_PH = float(os.getenv("FAIXA_MIN_PH", 6.5))
 FAIXA_MAX_PH = float(os.getenv("FAIXA_MAX_PH", 8.0))
 
 # Intervalos (segundos)
-INTERVALO_VERIFICACAO = int(os.getenv("INTERVALO_VERIFICACAO", 300))
-INTERVALO_ALERTA = int(os.getenv("INTERVALO_ALERTA", 600))
+INTERVALO_VERIFICACAO = int(os.getenv("INTERVALO_VERIFICACAO", 10))
+INTERVALO_ALERTA = int(os.getenv("INTERVALO_ALERTA", 10))
 
 # API Key WhatsApp (CallMeBot)
-MINHA_APIKEY = os.getenv("2180486")
+MINHA_APIKEY = os.getenv("CALLMEBOT_API_KEY")
 
 # Clientes (dispositivos para números de telefone)
-CLIENTS = {}
+CLIENTS = {
+    'meu_celular' : '558194330307',
+    
+    
+    
+        }
 for key, value in os.environ.items():
     if key.startswith("CLIENT_"):
         device_id = key[7:].lower()
@@ -36,7 +42,7 @@ API_USERNAME = os.getenv("API_USERNAME", "akashi")
 API_PASSWORD = os.getenv("API_PASSWORD", "br8mRzx2535")
 
 # API Base URL
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000") 
 
 # Configuração de Sensores
 SENSORS = {
