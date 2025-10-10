@@ -2,9 +2,9 @@ import pandas as pd
 import time
 import logging
 from sqlalchemy import create_engine
-from whatsapp.alerta_whatsapp import enviar_alerta_whatsapp
-from whatsapp.alerta_email import enviar_alerta_email
-from config.config import BD_URI, SENSORS, INTERVALO_VERIFICACAO, INTERVALO_ALERTA, CLIENTS
+from ..whatsapp.alerta_whatsapp import enviar_alerta_whatsapp
+from ..whatsapp.alerta_email import enviar_alerta_email
+from ..config.settings import BD_URI, SENSORS, INTERVALO_VERIFICACAO, INTERVALO_ALERTA, CLIENTS
 
 logger = logging.getLogger(__name__)
 

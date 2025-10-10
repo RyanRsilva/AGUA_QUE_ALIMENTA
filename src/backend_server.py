@@ -11,7 +11,8 @@ import os
 from datetime import datetime
 from sqlalchemy import create_engine
 import logging
-from config.config import DB_DIR, CSV_FILE, DB_PATH, BD_URI, API_USERNAME, API_PASSWORD
+from config.settings import DB_DIR, CSV_FILE, BD_URI, API_USERNAME, API_PASSWORD
+
 
 # Configurar logging
 logging.basicConfig(level=logging.INFO,

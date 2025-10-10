@@ -2,52 +2,48 @@
 
 import requests
 import logging
-from config.config import EVOLUTION_API_URL, EVOLUTION_API_KEY, EVOLUTION_INSTANCE
+from urllib.parse import quote
+from src.config.settings import MINHA_APIKEY
 
 logger = logging.getLogger(__name__)
 
-
 def enviar_alerta_whatsapp(numero_destino, mensagem):
     """
-    Envia uma mensagem via Evolution API.
+    Envia uma mensagem de alerta via CallMeBot API.
     """
-    if not EVOLUTION_API_URL or not EVOLUTION_API_KEY or not EVOLUTION_INSTANCE:
-        logger.error("Configuração da Evolution API não encontrada")
+    if not MINHA_APIKEY:
+        logger.error("API Key do CallMeBot não configurada. Verifique o arquivo .env.")
         return False
 
     if not numero_destino or not mensagem:
-        logger.error("Número de destino ou mensagem não fornecidos")
+        logger.error("Número de destino ou mensagem não fornecidos.")
         return False
-
-    url = f"{EVOLUTION_API_URL}/message/sendText/{EVOLUTION_INSTANCE}"
-    headers = {
-        "Content-Type": "application/json",
-        "apikey": EVOLUTION_API_KEY
-    }
-    data = {
-        "number": numero_destino,
-        "text": mensagem
-    }
-
-    logger.info(f"Enviando notificação para o número {numero_destino}")
 
     try:
-        response = requests.post(url, json=data, headers=headers)
+        url = f"https://api.callmebot.com/whatsapp.php?phone={numero_destino}&text={quote(mensagem)}&apikey={MINHA_APIKEY}"
+        logger.info(f"Enviando alerta para o número {numero_destino} via CallMeBot...")
+        
+        response = requests.get(url)
+        
         if response.status_code == 200:
-            logger.info("Notificação enviada com sucesso")
+            logger.info("Alerta enviado com sucesso pelo CallMeBot.")
             return True
         else:
-            logger.error(
-                f"Erro ao enviar. Código: {response.status_code}, Resposta: {response.text}")
+            logger.error(f"Erro ao enviar alerta pelo CallMeBot. Código: {response.status_code}, Resposta: {response.text}")
             return False
-    except Exception as e:
-        logger.error(f"Falha de conexão: {e}")
+            
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Falha na conexão ao tentar enviar alerta pelo CallMeBot: {e}")
         return False
-
 
 # --- Bloco de Teste ---
 if __name__ == '__main__':
-    print("--- Testando o módulo de alerta do WhatsApp ---")
-    numero_teste = "55SEUNUMEROAQUI"
-    mensagem_teste = "Olá! Este é um teste do sistema de alertas dinâmico. Kronnos."
-    enviar_alerta_whatsapp(numero_teste, mensagem_teste)
+    print("--- Testando o módulo de alerta do WhatsApp com CallMeBot ---")
+
+    numero_teste = "5581994330307" 
+    mensagem_teste = "Olá! Este é um teste do sistema de alertas com CallMeBot."
+    
+    if numero_teste == "5581994330307" or not MINHA_APIKEY:
+        print("\n[AVISO] Por favor, configure o `numero_teste` neste script e a `MINHA_APIKEY` no seu arquivo .env para testar.")
+    else:
+        enviar_alerta_whatsapp(numero_teste, mensagem_teste)

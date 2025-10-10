@@ -1,35 +1,24 @@
 import serial
-import pandas as pd
-import os
-from datetime import datetime
+import requests
+import logging
 from time import sleep
 import random
-from sqlalchemy import create_engine
+from datetime import datetime
 
 # ==============================================================================
 # --- CONFIGURAÇÕES ---
 # ==============================================================================
 
-from config.config import PORTA_SERIAL, BAUD_RATE, DB_DIR, CSV_FILE, DB_PATH, BD_URI
+from ..config.settings import PORTA_SERIAL, BAUD_RATE, API_BASE_URL
 
-porta_serial = PORTA_SERIAL
-baud_rate = BAUD_RATE
+# Configuração de logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-# Caminhos para os arquivos de log e banco de dados
-csv_file = CSV_FILE
-db_path = DB_PATH
-bd_uri = BD_URI
-
-# Garante que o diretório 'banco' exista
-os.makedirs(DB_DIR, exist_ok=True)
-
-# Conecta ao banco de dados usando SQLAlchemy
-try:
-    engine = create_engine(bd_uri)
-    print("Conexão com o banco de dados SQLite estabelecida.")
-except Exception as e:
-    print(f"Erro ao conectar ao banco de dados: {e}")
-    exit()  # Se não conseguir conectar ao BD, o programa não deve continuar
+# Endpoint da API para enviar os dados
+API_ENDPOINT = f"{API_BASE_URL}/data"
+DEVICE_ID = "esp32_leitor_serial"  # ID deste dispositivo/script
 
 # ==============================================================================
 # --- FUNÇÃO PRINCIPAL ---
@@ -38,20 +27,19 @@ except Exception as e:
 
 def iniciar_leitura_serial():
     """
-    Lê o valor de pH da porta serial (ou simula), e salva no arquivo CSV e no banco de dados SQLite.
+    Lê o valor de pH da porta serial (ou simula) e envia para a API do backend_server.
     """
 
     # Tenta conectar à porta serial
     try:
-        # Adicionado timeout de 2s
-        ser = serial.Serial(porta_serial, baud_rate, timeout=2)
-        print(f"Sucesso! Conectado à porta serial {porta_serial}.")
+        ser = serial.Serial(PORTA_SERIAL, BAUD_RATE, timeout=2)
+        logger.info(f"Sucesso! Conectado à porta serial {PORTA_SERIAL}.")
     except serial.SerialException:
-        print(
-            f"AVISO: Porta serial {porta_serial} não encontrada. Ativando MODO DE SIMULAÇÃO.")
+        logger.warning(
+            f"Porta serial {PORTA_SERIAL} não encontrada. Ativando MODO DE SIMULAÇÃO.")
         ser = None
 
-    print("Iniciando leitura de pH... Pressione CTRL+C para parar.\n")
+    logger.info("Iniciando leitura de pH... Pressione CTRL+C para parar.")
 
     # --- Loop Principal de Leitura ---
     try:
@@ -64,54 +52,47 @@ def iniciar_leitura_serial():
                     linha = linha_bytes.decode('utf-8').strip()
             else:
                 # MODO SIMULAÇÃO
-                ph_simulado = round(random.uniform(6.5, 7.8), 2)
-                # Formato da linha deve ser IDÊNTICO ao que o ESP32 envia
+                ph_simulado = round(random.uniform(3.5, 9.8), 2)
                 linha = f"ph_value:{ph_simulado}"
-                print("(Simulação)")
-                sleep(2)
+                logger.info(f"(Simulação) Gerado valor de pH: {ph_simulado}")
+                sleep(5)  # Em modo de simulação, espera 5 segundos
 
             # Processa a linha apenas se ela for válida
             if linha and linha.startswith("ph_value:"):
                 try:
-                    # 1. Extrai o valor de pH da linha
                     ph_valor = float(linha.split(":")[1].strip())
-                    timestamp = datetime.now()
-                    timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+                    logger.info(f"Leitura recebida -> pH: {ph_valor}")
 
-                    print(f"[{timestamp_str}] Leitura recebida -> pH: {ph_valor}")
+                    # Monta o payload para enviar à API
+                    payload = {
+                        "device_id": DEVICE_ID,
+                        "sensor": "ph",
+                        "value": ph_valor
+                    }
 
-                    # 2. Cria um DataFrame para a nova leitura
-                    novo_dado_df = pd.DataFrame(
-                        [[timestamp, ph_valor]], columns=["timestamp", "ph"])
-
-                    # 3. Salva no arquivo CSV (Método robusto e eficiente)
-                    # O cabeçalho é escrito automaticamente apenas se o arquivo não existir
+                    # Envia os dados para a API
                     try:
-                        novo_dado_df.to_csv(
-                            csv_file, mode='a', index=False, header=not os.path.exists(csv_file))
-                    except Exception as e:
-                        print(f"### ERRO ao salvar no CSV: {e} ###")
+                        response = requests.post(
+                            API_ENDPOINT, json=payload, timeout=10)
+                        response.raise_for_status()  # Lança exceção para status 4xx/5xx
+                        logger.info(
+                            f"Dados enviados para API com sucesso: {payload}")
 
-                    # 4. Salva no banco de dados SQLite (Seu método já estava ótimo!)
-                    # O formato da tabela ('leituras') é excelente para expansão futura
-                    try:
-                        novo_dado_sql = pd.DataFrame([[timestamp, 'ph', ph_valor]], columns=[
-                                                     "data_hora", "sensor", "valor"])
-                        novo_dado_sql.to_sql(
-                            "leituras", con=engine, if_exists='append', index=False)
-                    except Exception as e:
-                        print(f"### ERRO ao salvar no Banco de Dados: {e} ###")
+                    except requests.exceptions.RequestException as e:
+                        logger.error(f"Erro ao enviar dados para a API: {e}")
 
                 except (ValueError, IndexError) as e:
-                    print(
-                        f"--> Erro ao processar a linha: '{linha}'. Verifique o formato. | Erro: {e}")
+                    logger.error(
+                        f"Erro ao processar a linha: '{linha}'. Verifique o formato. | Erro: {e}")
+
+            sleep(1)  # Pequena pausa no loop principal
 
     except KeyboardInterrupt:
-        print("\nLeitura finalizada pelo usuário.")
+        logger.info("Leitura finalizada pelo usuário.")
     finally:
         if ser and ser.is_open:
             ser.close()
-            print("Porta serial fechada.")
+            logger.info("Porta serial fechada.")
 
 
 # ==============================================================================

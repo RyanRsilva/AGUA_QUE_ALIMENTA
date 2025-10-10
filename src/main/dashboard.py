@@ -1,6 +1,6 @@
 # main/dashboard.py (Versão API-Driven)
 
-from src.config.config import API_BASE_URL, SENSORS
+from src.config.settings import API_BASE_URL, SENSORS,API_PASSWORD,API_USERNAME
 import streamlit as st
 import pandas as pd
 import time
@@ -24,7 +24,7 @@ sensor_filter = st.sidebar.multiselect("Selecionar sensores", list(
 
 def carregar_dados_via_api(limit=100):
     try:
-        response = requests.get(f"{API_BASE_URL}/dados/historico/{limit}")
+        response = requests.get(f"{API_BASE_URL}/dados/historico/{limit}", auth=(API_USERNAME, API_PASSWORD))
         response.raise_for_status()
         dados_json = response.json()
         df = pd.DataFrame(dados_json)
@@ -36,7 +36,7 @@ def carregar_dados_via_api(limit=100):
 
 def carregar_resumo_via_api():
     try:
-        response = requests.get(f"{API_BASE_URL}/dados/resumo")
+        response = requests.get(f"{API_BASE_URL}/dados/resumo", auth=(API_USERNAME, API_PASSWORD))
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:

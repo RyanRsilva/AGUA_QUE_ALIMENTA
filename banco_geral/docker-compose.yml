@@ -9,33 +9,6 @@ services:
     volumes:
       - .:/app
     command: ./start_all.sh
-    depends_on:
-      - evolution-api
-      - postgres
-
-  evolution-api:
-    image: atendai/evolution-api:latest
-    ports:
-      - "8080:8080"
-    environment:
-      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY}
-      - INSTANCE_NAME=${EVOLUTION_INSTANCE}
-      # Adicionar outras variáveis conforme necessário
-    volumes:
-      - evolution_data:/evolution
-    restart: unless-stopped
-
-  postgres:
-    image: postgres:15
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=agua_qualidade
-      - POSTGRES_USER=agua_user
-      - POSTGRES_PASSWORD=agua_pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
@@ -105,7 +78,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  evolution_data:
-  postgres_data:
   elasticsearch_data:
   grafana_data:

@@ -38,7 +38,7 @@ Este projeto implementa um sistema IoT para monitoramento da qualidade da água,
    ```
 
 4. **Configure as variáveis de ambiente**:
-   - Copie `.env` e edite os valores:
+   - Crie um arquivo `.env` na raiz do projeto e adicione os seguintes valores:
      ```env
      MINHA_APIKEY=SUA_CHAVE_APIKEY_AQUI
      CLIENT_nascente_teste_01=558194330307
@@ -48,42 +48,21 @@ Este projeto implementa um sistema IoT para monitoramento da qualidade da água,
 
 ## Uso
 
-### Executar o Sistema Completo
+Para executar o projeto, você precisará iniciar os componentes em terminais separados.
+
+**1. Servidor API**:
 ```bash
-cd banco_geral
-python run_all.py
+python -m uvicorn src.backend_server:app --reload
 ```
 
-Ou diretamente:
-```bash
-python src/main/main.py
-```
-
-Isso iniciará:
-- Leitura serial (ou simulação)
-- Serviço de alertas
-- Servidor API (porta 8000)
-
-### Executar Componentes Individualmente
-
-**Servidor API**:
-```bash
-python src/backend_server.py
-```
-
-**Dashboard**:
+**2. Dashboard**:
 ```bash
 streamlit run src/main/dashboard.py
 ```
 
-**Leitura Serial**:
+**3. Monitoramento e Leitura Serial**:
 ```bash
-python src/sensores/leitor_serial.py
-```
-
-**Monitoramento de Alertas**:
-```bash
-python src/sensores/monitoramento_ph.py
+python src/main/main.py
 ```
 
 ### API Endpoints
@@ -101,107 +80,32 @@ pytest tests/
 
 ## Configuração
 
-### WhatsApp API
+### WhatsApp API (CallMeBot)
 1. Acesse [CallMeBot](https://www.callmebot.com/)
-2. Obtenha sua API key
-3. Configure no `.env`
+2. Obtenha sua API key após ativar o bot.
+3. Adicione a chave no arquivo `.env` como `MINHA_APIKEY`.
 
 ### Clientes
-Adicione mapeamentos de dispositivos para números no `.env`:
+Adicione mapeamentos de `device_id` para números de telefone no `.env`:
 ```env
-CLIENT_device_id=55xxxxxxxxx
+CLIENT_nomedispositivo=55DDDNUMERO
 ```
-
-## Desenvolvimento
-
-## Estrutura do Projeto
-```
-agua_que_alimenta/
-├── src/                        # Código fonte principal
-│   ├── alertas/                # Serviços e lógica de alertas
-│   │   ├── __init__.py
-│   ├── banco/                  # Banco de dados, arquivos CSV, gráficos
-│   │   ├── __init__.py
-│   │   ├── dados_ph.db         # Banco SQLite
-│   │   ├── historico_ph.csv    # Arquivo CSV histórico
-│   │   ├── graficos_excel.py
-│   │   └── graficos_SQl.py
-│   ├── config/                 # Configurações e variáveis de ambiente
-│   │   ├── __init__.py
-│   │   └── config.py
-│   ├── main/                   # Código principal da aplicação
-│   │   ├── __init__.py
-│   │   ├── main.py             # Entry point principal (threading)
-│   │   ├── main_fase1.py       # Versão alternativa
-│   │   └── dashboard.py        # Dashboard Streamlit
-│   ├── sensores/               # Leitura e monitoramento dos sensores
-│   │   ├── __init__.py
-│   │   ├── leitor_serial.py    # Leitura serial/simulada
-│   │   └── monitoramento_ph.py # Monitoramento de pH e alertas
-│   ├── utils/                  # Utilitários e helpers
-│   │   ├── __init__.py
-│   │   ├── LEITURAS/
-│   │   └── test/
-│   ├── whatsapp/               # Integração com WhatsApp
-│   │   ├── __init__.py
-│   │   └── alerta_whatsapp.py
-│   └── backend_server.py       # Servidor FastAPI
-├── tests/                      # Testes unitários e de integração
-├── banco/                      # Dados persistentes
-├── banco_geral/                # Configurações Docker
-│   ├── Dockerfile
-│   ├── docker-compose.yml
-│   ├── requirements.txt
-│   ├── run_all.py
-│   ├── start_all.sh
-│   ├── README.md
-│   └── TODO.md
-├── .env                        # Variáveis de ambiente
-├── .gitignore
-├── LICENSE
-└── AGUA_QUE_ALIMENTA.code-workspace
-```
-
-### Logs
-Logs são salvos em `app.log` com nível INFO.
 
 ## Docker
 
-Para executar com Docker Compose (recomendado, inclui Evolution API para WhatsApp):
+Para executar com Docker Compose (inclui serviços de monitoramento como ELK e Prometheus):
 ```bash
 cd banco_geral
 docker-compose up --build
 ```
 
-Ou manualmente:
-```bash
-cd banco_geral
-docker build -t agua-monitor .
-docker run -p 8000:8000 -p 8501:8501 agua-monitor
-```
-
-## Segurança
-
-- Autenticação básica HTTP nos endpoints de leitura.
-- Validação de entrada para prevenir injeções.
-- Chaves de API armazenadas em variáveis de ambiente.
-
 ## Melhorias Futuras
 
 - Suporte a múltiplos tipos de sensores.
-- Interface web mais avançada.
-- Notificações push/email.
-- Migração para PostgreSQL.
-- Deploy em nuvem.
+- Interface web mais avançada (ex: React, Vue.js).
+- Notificações via outros canais (push, email).
+- Deploy em nuvem (AWS, GCP, Azure).
 
 ## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para detalhes.
-
-## Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Commit suas mudanças
-4. Push para a branch
-5. Abra um Pull Request

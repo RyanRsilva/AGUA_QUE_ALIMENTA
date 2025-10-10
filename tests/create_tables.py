@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String, Float, DateTime
-from config.config import BD_URI
+from config.settings import BD_URI
 
 
 def create_tables():
@@ -18,8 +18,9 @@ def create_tables():
 
     # Criar as tabelas
     metadata.create_all(engine)
-    print("✅ Tabelas criadas com sucesso no PostgreSQL!")
+    print("✅ Tabelas criadas com sucesso!")
 
 
 if __name__ == "__main__":
     create_tables()
+

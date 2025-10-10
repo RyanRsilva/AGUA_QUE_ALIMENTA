@@ -7,7 +7,7 @@ url = "http://localhost:8000/data"
 data = {
     "device_id": "esp32_ph_01",
     "sensor": "ph",
-    "value": 7.2
+    "value": 9
 }
 
 response = requests.post(url, json=data)

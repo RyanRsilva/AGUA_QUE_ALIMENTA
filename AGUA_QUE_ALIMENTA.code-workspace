@@ -8,5 +8,9 @@
 			"path": "../../../PlatformIO/Projects/Agua que alimenta"
 		}
 	],
-	"settings": {}
+	"settings": {},
+	
+		"python.analysis.projects":{
+    	"python.analysis.extraPaths": ["./src"]
+	}
 }

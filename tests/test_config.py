@@ -1,5 +1,5 @@
 import pytest
-from config.config import FAIXA_MIN_PH, FAIXA_MAX_PH, API_USERNAME, API_PASSWORD
+from config.settings import FAIXA_MIN_PH, FAIXA_MAX_PH, API_USERNAME, API_PASSWORD
 
 
 def test_faixa_ph():
