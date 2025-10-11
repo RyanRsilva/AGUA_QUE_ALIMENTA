@@ -27,11 +27,11 @@ MINHA_APIKEY = os.getenv("CALLMEBOT_API_KEY")
 
 # Clientes (dispositivos para números de telefone)
 CLIENTS = {
-    'meu_celular' : '558194330307',
-    
-    
-    
-        }
+    'meu_celular': '558194330307',
+
+
+
+}
 for key, value in os.environ.items():
     if key.startswith("CLIENT_"):
         device_id = key[7:].lower()
@@ -42,7 +42,7 @@ API_USERNAME = os.getenv("API_USERNAME", "akashi")
 API_PASSWORD = os.getenv("API_PASSWORD", "br8mRzx2535")
 
 # API Base URL
-API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000") 
+API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000")
 
 # Configuração de Sensores
 SENSORS = {

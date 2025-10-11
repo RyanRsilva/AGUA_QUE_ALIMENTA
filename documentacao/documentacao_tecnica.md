@@ -103,7 +103,10 @@ A arquitetura é modular e composta pelos seguintes elementos principais:
     ```
 
 5.  **Execute os componentes** conforme descrito na Seção 3 (em terminais separados).
-
+    - Alternativamente, para iniciar todos os serviços de uma vez, use o script unificado:
+      ```bash
+      python banco_geral/run_all.py
+      ```
 ## 7. Visão de Futuro e Melhorias
 
 Com base na análise do projeto, as seguintes melhorias estão planejadas ou são recomendadas:

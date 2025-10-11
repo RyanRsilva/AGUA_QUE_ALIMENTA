@@ -47,23 +47,16 @@ Este projeto implementa um sistema IoT para monitoramento da qualidade da água,
      ```
 
 ## Uso
-
-Para executar o projeto, você precisará iniciar os componentes em terminais separados.
-
-**1. Servidor API**:
+Para executar o projeto completo (API, Dashboard e Monitoramento) de uma só vez, utilize o script `run_all.py`. Certifique-se de que seu ambiente virtual está ativado.
 ```bash
-python -m uvicorn src.backend_server:app --reload
+python banco_geral/run_all.py
 ```
+O script iniciará todos os serviços. Para pará-los, pressione `CTRL+C` no terminal onde o script está rodando.
 
-**2. Dashboard**:
-```bash
-streamlit run src/main/dashboard.py
-```
-
-**3. Monitoramento e Leitura Serial**:
-```bash
-python src/main/main.py
-```
+Se preferir, você ainda pode executar cada componente em um terminal separado:
+- **API**: `python -m uvicorn src.backend_server:app --reload`
+- **Dashboard**: `streamlit run src/main/dashboard.py`
+- **Monitoramento**: `python src/main/main.py`
 
 ### API Endpoints
 
@@ -74,6 +67,7 @@ python src/main/main.py
 
 ### Testes
 
+Para rodar os testes da API, use o `pytest`:
 ```bash
 pytest tests/
 ```

@@ -12,9 +12,7 @@ COMO EXECUTAR O PROJETO COMPLETO (EM TERMINAIS SEPARADOS):
 1. INICIAR O SERVIDOR BACKEND (API):
     - O servidor FastAPI recebe os dados dos sensores e os armazena.
     - Comando:
-        python -m uvicorn src.backend_server:app --reload
-        tem que esta dentro do src:
-            cd src /uvicorn backend_server:app --reload
+        python -m uvicorn src.backend_server:app --reload --host 0.0.0.0
 
 2. INICIAR O DASHBOARD DE VISUALIZAÇÃO:
     - O Streamlit consome os dados da API e os exibe em tempo real.
@@ -52,15 +50,18 @@ def main():
     """
 
     # Thread para ler dados da porta serial (do hardware real)
-    thread_leitura_serial = threading.Thread(target=iniciar_leitura_serial, daemon=True)
+    thread_leitura_serial = threading.Thread(
+        target=iniciar_leitura_serial, daemon=True)
 
     # Thread para monitorar o banco de dados e enviar alertas
-    thread_monitoramento_alertas = threading.Thread(target=iniciar_monitoramento_alerta, daemon=True)
+    thread_monitoramento_alertas = threading.Thread(
+        target=iniciar_monitoramento_alerta, daemon=True)
 
     thread_leitura_serial.start()
     logger.info("Thread de leitura da porta serial iniciada.")
 
-    time.sleep(2)  # Pequena pausa para garantir que a leitura serial comece primeiro
+    # Pequena pausa para garantir que a leitura serial comece primeiro
+    time.sleep(2)
 
     thread_monitoramento_alertas.start()
     logger.info("Thread de monitoramento de alertas iniciada.")
@@ -74,6 +75,7 @@ def main():
         logger.info("Encerrando o sistema a pedido do usuário (CTRL+C).")
     finally:
         logger.info("Finalizando threads...")
+
 
 if __name__ == "__main__":
     main()
